@@ -1,25 +1,27 @@
 <!DOCTYPE html>
-<html lang="en" dir="auto">
+<html lang="en" dir="auto" data-theme="auto">
 
-<head><meta charset="utf-8">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
 <title>Markov Chains &amp; Modelling | SowmithK</title>
 <meta name="keywords" content="markov">
 <meta name="description" content="I&rsquo;ve been hearing of Markov Chains for a few years, never got to read about them or something with them. This is my look at them. The sole goal of this post is to get a good look at how Markov Chains work, we are going to do this by attempting to model some stock data. This post is initially written as a paper for a course I took.
-Introduction There are a myriad of ways to model stock, and lot of good research is being done to solve this problem, and the better the algorithm to predict stock, the more money you can make and that can be a great motivator to innovate and have better stock prediction models.">
+
+Introduction
+There are a myriad of ways to model stock, and lot of good research is being done to solve this problem, and the better the algorithm to predict stock, the more money you can make and that can be a great motivator to innovate and have better stock prediction models. These industry models can be extremely complex and use proprietary heuristics that involve working with several different types of models. For our paper, we are not involving any external factors to base the predictions on, and not using macro economic trends or factors. and we are going to use only the candle data that we can fetch about a stock.">
 <meta name="author" content="">
-<link rel="canonical" href="https://sowmith1999.github.io/blog/2024/markov-chains-modelling/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.b609c58d5c11bb90b1a54e04005d74ad1ddf22165eb79f5533967e57df9c3b50.css" integrity="sha256-tgnFjVwRu5CxpU4EAF10rR3fIhZet59VM5Z&#43;V9&#43;cO1A=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://sowmith1999.github.io/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://sowmith1999.github.io/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://sowmith1999.github.io/favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://sowmith1999.github.io/apple-touch-icon.png">
-<link rel="mask-icon" href="https://sowmith1999.github.io/safari-pinned-tab.svg">
+<link rel="canonical" href="http://localhost:1313/blog/2024/markov-chains-modelling/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="https://sowmith1999.github.io/blog/2024/markov-chains-modelling/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/blog/2024/markov-chains-modelling/">
 <noscript>
     <style>
         #theme-toggle,
@@ -40,23 +42,38 @@ Introduction There are a myriad of ways to model stock, and lot of good research
                 --code-block-bg: rgb(46, 46, 51);
                 --code-bg: rgb(55, 56, 62);
                 --border: rgb(51, 51, 51);
+                color-scheme: dark;
             }
 
             .list {
                 background: var(--theme);
             }
 
-            .list:not(.dark)::-webkit-scrollbar-track {
-                background: 0 0;
+            .toc {
+                background: var(--entry);
             }
+        }
 
-            .list:not(.dark)::-webkit-scrollbar-thumb {
-                border-color: var(--theme);
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
             }
         }
 
     </style>
 </noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <script>
   MathJax = {
@@ -70,21 +87,23 @@ Introduction There are a myriad of ways to model stock, and lot of good research
 
 
 
-
-  
-
-<meta property="og:title" content="Markov Chains &amp; Modelling" />
-<meta property="og:description" content="I&rsquo;ve been hearing of Markov Chains for a few years, never got to read about them or something with them. This is my look at them. The sole goal of this post is to get a good look at how Markov Chains work, we are going to do this by attempting to model some stock data. This post is initially written as a paper for a course I took.
-Introduction There are a myriad of ways to model stock, and lot of good research is being done to solve this problem, and the better the algorithm to predict stock, the more money you can make and that can be a great motivator to innovate and have better stock prediction models." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://sowmith1999.github.io/blog/2024/markov-chains-modelling/" /><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2024-12-21T00:57:38-05:00" />
-<meta property="article:modified_time" content="2024-12-21T00:57:38-05:00" />
-
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Markov Chains &amp; Modelling"/>
+<meta property="og:url" content="http://localhost:1313/blog/2024/markov-chains-modelling/">
+  <meta property="og:site_name" content="SowmithK">
+  <meta property="og:title" content="Markov Chains & Modelling">
+  <meta property="og:description" content="I’ve been hearing of Markov Chains for a few years, never got to read about them or something with them. This is my look at them. The sole goal of this post is to get a good look at how Markov Chains work, we are going to do this by attempting to model some stock data. This post is initially written as a paper for a course I took.
+Introduction There are a myriad of ways to model stock, and lot of good research is being done to solve this problem, and the better the algorithm to predict stock, the more money you can make and that can be a great motivator to innovate and have better stock prediction models. These industry models can be extremely complex and use proprietary heuristics that involve working with several different types of models. For our paper, we are not involving any external factors to base the predictions on, and not using macro economic trends or factors. and we are going to use only the candle data that we can fetch about a stock.">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2024-12-21T00:57:38-05:00">
+    <meta property="article:modified_time" content="2024-12-21T00:57:38-05:00">
+    <meta property="article:tag" content="Markov">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Markov Chains &amp; Modelling">
 <meta name="twitter:description" content="I&rsquo;ve been hearing of Markov Chains for a few years, never got to read about them or something with them. This is my look at them. The sole goal of this post is to get a good look at how Markov Chains work, we are going to do this by attempting to model some stock data. This post is initially written as a paper for a course I took.
-Introduction There are a myriad of ways to model stock, and lot of good research is being done to solve this problem, and the better the algorithm to predict stock, the more money you can make and that can be a great motivator to innovate and have better stock prediction models."/>
+
+Introduction
+There are a myriad of ways to model stock, and lot of good research is being done to solve this problem, and the better the algorithm to predict stock, the more money you can make and that can be a great motivator to innovate and have better stock prediction models. These industry models can be extremely complex and use proprietary heuristics that involve working with several different types of models. For our paper, we are not involving any external factors to base the predictions on, and not using macro economic trends or factors. and we are going to use only the candle data that we can fetch about a stock.">
 
 
 <script type="application/ld+json">
@@ -96,13 +115,13 @@ Introduction There are a myriad of ways to model stock, and lot of good research
       "@type": "ListItem",
       "position":  1 ,
       "name": "Blog",
-      "item": "https://sowmith1999.github.io/blog/"
+      "item": "http://localhost:1313/blog/"
     }, 
     {
       "@type": "ListItem",
       "position":  2 ,
       "name": "Markov Chains \u0026 Modelling",
-      "item": "https://sowmith1999.github.io/blog/2024/markov-chains-modelling/"
+      "item": "http://localhost:1313/blog/2024/markov-chains-modelling/"
     }
   ]
 }
@@ -113,7 +132,7 @@ Introduction There are a myriad of ways to model stock, and lot of good research
   "@type": "BlogPosting",
   "headline": "Markov Chains \u0026 Modelling",
   "name": "Markov Chains \u0026 Modelling",
-  "description": "I\u0026rsquo;ve been hearing of Markov Chains for a few years, never got to read about them or something with them. This is my look at them. The sole goal of this post is to get a good look at how Markov Chains work, we are going to do this by attempting to model some stock data. This post is initially written as a paper for a course I took.\nIntroduction There are a myriad of ways to model stock, and lot of good research is being done to solve this problem, and the better the algorithm to predict stock, the more money you can make and that can be a great motivator to innovate and have better stock prediction models.",
+  "description": "I\u0026rsquo;ve been hearing of Markov Chains for a few years, never got to read about them or something with them. This is my look at them. The sole goal of this post is to get a good look at how Markov Chains work, we are going to do this by attempting to model some stock data. This post is initially written as a paper for a course I took.\nIntroduction There are a myriad of ways to model stock, and lot of good research is being done to solve this problem, and the better the algorithm to predict stock, the more money you can make and that can be a great motivator to innovate and have better stock prediction models. These industry models can be extremely complex and use proprietary heuristics that involve working with several different types of models. For our paper, we are not involving any external factors to base the predictions on, and not using macro economic trends or factors. and we are going to use only the candle data that we can fetch about a stock.\n",
   "keywords": [
     "markov"
   ],
@@ -124,38 +143,26 @@ Introduction There are a myriad of ways to model stock, and lot of good research
   "dateModified": "2024-12-21T00:57:38-05:00",
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://sowmith1999.github.io/blog/2024/markov-chains-modelling/"
+    "@id": "http://localhost:1313/blog/2024/markov-chains-modelling/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "SowmithK",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://sowmith1999.github.io/favicon.ico"
+      "url": "http://localhost:1313/favicon.ico"
     }
   }
 }
 </script>
 </head>
-
-<body class="" id="top">
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.body.classList.add('dark');
-    } else if (localStorage.getItem("pref-theme") === "light") {
-        document.body.classList.remove('dark')
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark');
-    }
-
-</script>
-
-<header class="header">
+<body id="top">
+    <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://sowmith1999.github.io/" accesskey="h" title="SowmithK (Alt + H)">SowmithK</a>
+            <a href="http://localhost:1313/" accesskey="h" title="SowmithK (Alt + H)">SowmithK</a>
             <div class="logo-switches">
-                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
@@ -179,12 +186,12 @@ Introduction There are a myriad of ways to model stock, and lot of good research
         </div>
         <ul id="menu">
             <li>
-                <a href="https://sowmith1999.github.io/blog/" title="Blog">
+                <a href="http://localhost:1313/blog/" title="Blog">
                     <span>Blog</span>
                 </a>
             </li>
             <li>
-                <a href="https://sowmith1999.github.io/tags/" title="Tags">
+                <a href="http://localhost:1313/tags/" title="Tags">
                     <span>Tags</span>
                 </a>
             </li>
@@ -204,23 +211,6 @@ Introduction There are a myriad of ways to model stock, and lot of good research
 </div>
   </header> 
   <div class="post-content"><p>I&rsquo;ve been hearing of Markov Chains for a few years, never got to read about them or something with them. This is my look at them. The sole goal of this post is to get a good look at how Markov Chains work, we are going to do this by attempting to model some stock data. This post is initially written as a paper for a course I took.</p>
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
 <hr>
 <h2 id="introduction">Introduction<a hidden class="anchor" aria-hidden="true" href="#introduction">#</a></h2>
 <p>There are a myriad of ways to model stock, and lot of good research is being done to solve this problem, and the better the algorithm to predict stock, the more money you can make and that can be a great motivator to innovate and have better stock prediction models. These industry models can be extremely complex and use proprietary heuristics that involve working with several different types of models. For our paper, we are not involving any external factors to base the predictions on, and not using macro economic trends or factors. and we are going to use only the candle data that we can fetch about a stock.</p>
@@ -326,73 +316,73 @@ These are the 5 stocks we are going to be looking at:</p>
 </div><p>Here the transition probability calculations remain the same apart from the change to the size of the matrix, here it is a  \(8 \times 8\) table, we adjust to any other dimension as we make our discretization more fine.</p>
 <p>Well, the next question is what do these states mean, what does it mean for a day&rsquo;s tuple to be classified into each state. We will look at each state and see what it generally means to get an idea of how insights are gathered from these analysis. This type of tagging the states to mean something is hard when the number of states goes up, say we are using 64 states, and now the transition table will have \(64 \times 64\) entries and classifying each state is hard. This simpler classification is allowing to assign these states some meaning.</p>
 <table>
-<thead>
-<tr>
-<th style="text-align:center"><strong>Final State</strong></th>
-<th style="text-align:center"><strong>Change State</strong></th>
-<th style="text-align:center"><strong>Volume State</strong></th>
-<th style="text-align:center"><strong>Volatility State</strong></th>
-<th style="text-align:left"><strong>Interpretation</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0</td>
-<td style="text-align:left">Low Change, Volume and Low Volatility</td>
-</tr>
-<tr>
-<td style="text-align:center">1</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">1</td>
-<td style="text-align:left">Low Change, Volume and High Volatility</td>
-</tr>
-<tr>
-<td style="text-align:center">2</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">0</td>
-<td style="text-align:left">Low Change, Volatility and High Volume</td>
-</tr>
-<tr>
-<td style="text-align:center">3</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">1</td>
-<td style="text-align:left">Low Change and High Volume, Volatility</td>
-</tr>
-<tr>
-<td style="text-align:center">4</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0</td>
-<td style="text-align:left">High Change and Low Volume, Volatility</td>
-</tr>
-<tr>
-<td style="text-align:center">5</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">1</td>
-<td style="text-align:left">High Change, Volatility and Low Volume</td>
-</tr>
-<tr>
-<td style="text-align:center">6</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">0</td>
-<td style="text-align:left">High Change, Volume and Low Volatility</td>
-</tr>
-<tr>
-<td style="text-align:center">7</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">1</td>
-<td style="text-align:left">High Change, Volume, Volatility</td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th style="text-align: center"><strong>Final State</strong></th>
+          <th style="text-align: center"><strong>Change State</strong></th>
+          <th style="text-align: center"><strong>Volume State</strong></th>
+          <th style="text-align: center"><strong>Volatility State</strong></th>
+          <th style="text-align: left"><strong>Interpretation</strong></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: center">0</td>
+          <td style="text-align: center">0</td>
+          <td style="text-align: center">0</td>
+          <td style="text-align: center">0</td>
+          <td style="text-align: left">Low Change, Volume and Low Volatility</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">1</td>
+          <td style="text-align: center">0</td>
+          <td style="text-align: center">0</td>
+          <td style="text-align: center">1</td>
+          <td style="text-align: left">Low Change, Volume and High Volatility</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">2</td>
+          <td style="text-align: center">0</td>
+          <td style="text-align: center">1</td>
+          <td style="text-align: center">0</td>
+          <td style="text-align: left">Low Change, Volatility and High Volume</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">3</td>
+          <td style="text-align: center">0</td>
+          <td style="text-align: center">1</td>
+          <td style="text-align: center">1</td>
+          <td style="text-align: left">Low Change and High Volume, Volatility</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">4</td>
+          <td style="text-align: center">1</td>
+          <td style="text-align: center">0</td>
+          <td style="text-align: center">0</td>
+          <td style="text-align: left">High Change and Low Volume, Volatility</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">5</td>
+          <td style="text-align: center">1</td>
+          <td style="text-align: center">0</td>
+          <td style="text-align: center">1</td>
+          <td style="text-align: left">High Change, Volatility and Low Volume</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">6</td>
+          <td style="text-align: center">1</td>
+          <td style="text-align: center">1</td>
+          <td style="text-align: center">0</td>
+          <td style="text-align: left">High Change, Volume and Low Volatility</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">7</td>
+          <td style="text-align: center">1</td>
+          <td style="text-align: center">1</td>
+          <td style="text-align: center">1</td>
+          <td style="text-align: left">High Change, Volume, Volatility</td>
+      </tr>
+  </tbody>
 </table>
 <p>We will come back to how we are going to use the calculated transition probabilities and how they perform and how we can improve these with more states and other changes to how we separate the states.</p>
 <hr>
@@ -464,45 +454,44 @@ These are the 5 stocks we are going to be looking at:</p>
 <hr>
 <h2 id="initial-model-and-comments">Initial Model and Comments<a hidden class="anchor" aria-hidden="true" href="#initial-model-and-comments">#</a></h2>
 <p>For testing, and example we are using AAPL(Apple Inc) stock for the 10 year period, which is close to 2000 entries as stated in the prompt for the paper. We are picking days from 2009 Jan 1st to 2019 Jan 1st. Why these ten years instead of just the last ten years, last ten years is skewed by the pandemic and the stock movements are a lot more erratic than we see day to day and as we are not considering external factors taking data in which an external has massive influence is going to make the data bad for modeling, Hence we are picking the decade&rsquo;s worth of data form 2009 to 2019, this set of data is more in line with how the stock movements happen. Here is a Markov chain generated from the data of the AAPL stock for the mentioned time period.</p>
-<p><img loading="lazy" src="8by8graph.png" alt="8 state Markov Chains for AAPL"  />
-</p>
+<p><img alt="8 state Markov Chains for AAPL" loading="lazy" src="/blog/2024/markov-chains-modelling/8by8graph.png"></p>
 <p>In the figure, we can make out the transition probabilities for the 8 states on the perimeter with a lot of connections between each state. Now time to measure the performance of the Markov model presented above.</p>
 <p>We know how the model looks that is, Markov chains with 8 nodes. For initial model and comparison, from the data we downloaded for the 11 years between, 2009 and 2020. We use 2000 entries for estimation and the remaining 747 entries for testing the model made, and we use the loop indicated in the listing. The results for the two stocks tested don&rsquo;t improve on the baseline by much, they more or less match the performance to the baseline. The performance is similar to the other stocks we ran the model on. There is some configuration we can do here, where there can be a window for how much history we are going to factor into the model. Here we set the model to use the last 500 days for the model. And this can be configured.</p>
 <table>
-<thead>
-<tr>
-<th style="text-align:center">Stock</th>
-<th style="text-align:center">Always UP</th>
-<th style="text-align:center">8 State Markov Model</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">AAPL</td>
-<td style="text-align:center">50.50</td>
-<td style="text-align:center">48.09</td>
-</tr>
-<tr>
-<td style="text-align:center">INTC</td>
-<td style="text-align:center">52.90</td>
-<td style="text-align:center">50.70</td>
-</tr>
-<tr>
-<td style="text-align:center">XOM</td>
-<td style="text-align:center">48.49</td>
-<td style="text-align:center">50.50</td>
-</tr>
-<tr>
-<td style="text-align:center">F</td>
-<td style="text-align:center">51.3</td>
-<td style="text-align:center">48.09</td>
-</tr>
-<tr>
-<td style="text-align:center">BAC</td>
-<td style="text-align:center">50.30</td>
-<td style="text-align:center">48.69</td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th style="text-align: center">Stock</th>
+          <th style="text-align: center">Always UP</th>
+          <th style="text-align: center">8 State Markov Model</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: center">AAPL</td>
+          <td style="text-align: center">50.50</td>
+          <td style="text-align: center">48.09</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">INTC</td>
+          <td style="text-align: center">52.90</td>
+          <td style="text-align: center">50.70</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">XOM</td>
+          <td style="text-align: center">48.49</td>
+          <td style="text-align: center">50.50</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">F</td>
+          <td style="text-align: center">51.3</td>
+          <td style="text-align: center">48.09</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">BAC</td>
+          <td style="text-align: center">50.30</td>
+          <td style="text-align: center">48.69</td>
+      </tr>
+  </tbody>
 </table>
 <p>The 8 state model doesn&rsquo;t beat the baseline of just always predicting up, and which means, We want some improvement from the model, we want to push the prediction as much as possible towards the best possible value for Markov Chains. For this goal our simple model is not going to cut it, we need make changes and improvements to the model. The <em>Brier Score</em> for the model sits at 0.25, which is basically saying that the model is sitting on the fence, and is considered bit of a poor prediction.</p>
 <hr>
@@ -542,40 +531,40 @@ These are the 5 stocks we are going to be looking at:</p>
 </ul>
 <p>This increases the number of possible states to 36, and this ideally should lead to better modeling of the behavior of the stock. We test the model same as we did before using a walk forward loop, that looks back 500 days for the prediction.</p>
 <table>
-<thead>
-<tr>
-<th style="text-align:center">Stock</th>
-<th style="text-align:center">Always UP</th>
-<th style="text-align:center">36 State Markov Model</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">AAPL</td>
-<td style="text-align:center">50.50</td>
-<td style="text-align:center">51.13</td>
-</tr>
-<tr>
-<td style="text-align:center">INTC</td>
-<td style="text-align:center">53.10</td>
-<td style="text-align:center">56.31</td>
-</tr>
-<tr>
-<td style="text-align:center">XOM</td>
-<td style="text-align:center">48.7</td>
-<td style="text-align:center">52.1</td>
-</tr>
-<tr>
-<td style="text-align:center">F</td>
-<td style="text-align:center">51.3</td>
-<td style="text-align:center">45.09</td>
-</tr>
-<tr>
-<td style="text-align:center">BAC</td>
-<td style="text-align:center">50.5</td>
-<td style="text-align:center">51.1</td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th style="text-align: center">Stock</th>
+          <th style="text-align: center">Always UP</th>
+          <th style="text-align: center">36 State Markov Model</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: center">AAPL</td>
+          <td style="text-align: center">50.50</td>
+          <td style="text-align: center">51.13</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">INTC</td>
+          <td style="text-align: center">53.10</td>
+          <td style="text-align: center">56.31</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">XOM</td>
+          <td style="text-align: center">48.7</td>
+          <td style="text-align: center">52.1</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">F</td>
+          <td style="text-align: center">51.3</td>
+          <td style="text-align: center">45.09</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">BAC</td>
+          <td style="text-align: center">50.5</td>
+          <td style="text-align: center">51.1</td>
+      </tr>
+  </tbody>
 </table>
 <p>From our first model, that is 8 state Markov model, there is improvement, especially in the first three stocks in the table. Apart from the Ford stock, we are at least a percentage point better than the base, with 3.2% better in case of Intel stock. The lack of prediction performance in case of Ford makes sense, because the time period we are analyzing for the stock is some of the most volatile decade, it grew \(8\times\) and kept falling from the peak till reaching ending up at a third of the peak, which is extreme (comparatively) volatility throughout. So we are able to beat the baseline, and have seen improvement from the initial model with only 8 states. Now the question is what major changes we can make to the model to enable some more improvement.</p>
 <h3 id="higher-order-markov-models">Higher Order Markov Models<a hidden class="anchor" aria-hidden="true" href="#higher-order-markov-models">#</a></h3>
@@ -603,40 +592,40 @@ Now we create what are called super states, that is we look at two states for ea
 </div>
 </div><p><strong>Problems</strong> The problem with HMM is there will just be too many states, and this sparsity of states will over fit the data, in the sense that some states will have very few values, that are basically outliers influencing the modeling outcomes. Take our case, if we take out 36 state model and convert it to second order, the maximum number of states is 1296. We are not even using that large a window, so some states will have very few states and now the model needs to consider how to merge these states. This merging also cannot be done naively, there needs to some considerations on what states go together and how many to merge them into. We are not doing that, we are restricting ourselves to all the states of the second order Markov Model. Here are the results for the badly tuned second order model.</p>
 <table>
-<thead>
-<tr>
-<th style="text-align:center">Stock</th>
-<th style="text-align:center">Always UP</th>
-<th style="text-align:center">36 State Second Order Model w/o Tuning</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">AAPL</td>
-<td style="text-align:center">50.50</td>
-<td style="text-align:center">51.1</td>
-</tr>
-<tr>
-<td style="text-align:center">INTC</td>
-<td style="text-align:center">53.10</td>
-<td style="text-align:center">50.1</td>
-</tr>
-<tr>
-<td style="text-align:center">XOM</td>
-<td style="text-align:center">48.7</td>
-<td style="text-align:center">51.3</td>
-</tr>
-<tr>
-<td style="text-align:center">F</td>
-<td style="text-align:center">51.3</td>
-<td style="text-align:center">49.09</td>
-</tr>
-<tr>
-<td style="text-align:center">BAC</td>
-<td style="text-align:center">50.5</td>
-<td style="text-align:center">50.1</td>
-</tr>
-</tbody>
+  <thead>
+      <tr>
+          <th style="text-align: center">Stock</th>
+          <th style="text-align: center">Always UP</th>
+          <th style="text-align: center">36 State Second Order Model w/o Tuning</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: center">AAPL</td>
+          <td style="text-align: center">50.50</td>
+          <td style="text-align: center">51.1</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">INTC</td>
+          <td style="text-align: center">53.10</td>
+          <td style="text-align: center">50.1</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">XOM</td>
+          <td style="text-align: center">48.7</td>
+          <td style="text-align: center">51.3</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">F</td>
+          <td style="text-align: center">51.3</td>
+          <td style="text-align: center">49.09</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">BAC</td>
+          <td style="text-align: center">50.5</td>
+          <td style="text-align: center">50.1</td>
+      </tr>
+  </tbody>
 </table>
 <hr>
 <h3 id="modeling-closing-remarks">Modeling Closing Remarks<a hidden class="anchor" aria-hidden="true" href="#modeling-closing-remarks">#</a></h3>
@@ -688,14 +677,14 @@ Now we create what are called super states, that is we look at two states for ea
 
   <footer class="post-footer">
     <ul class="post-tags">
-      <li><a href="https://sowmith1999.github.io/tags/markov/">Markov</a></li>
+      <li><a href="http://localhost:1313/tags/markov/">Markov</a></li>
     </ul>
   </footer>
 </article>
     </main>
     
 <footer class="footer">
-        <span>&copy; 2025 <a href="https://sowmith1999.github.io/">SowmithK</a></span> · 
+        <span>&copy; 2026 <a href="http://localhost:1313/">SowmithK</a></span> · 
 
     <span>
         Powered by
@@ -710,9 +699,14 @@ Now we create what are called super states, that is we look at two states for ea
 </a>
 
 <script>
-    let menu = document.getElementById('menu')
+    let menu = document.getElementById('menu');
     if (menu) {
-        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
         menu.onscroll = function () {
             localStorage.setItem("menu-scroll-position", menu.scrollLeft);
         }
@@ -753,11 +747,12 @@ Now we create what are called super states, that is we look at two states for ea
 </script>
 <script>
     document.getElementById("theme-toggle").addEventListener("click", () => {
-        if (document.body.className.includes("dark")) {
-            document.body.classList.remove('dark');
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
             localStorage.setItem("pref-theme", 'light');
         } else {
-            document.body.classList.add('dark');
+            html.dataset.theme = 'dark';
             localStorage.setItem("pref-theme", 'dark');
         }
     })
