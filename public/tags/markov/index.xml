@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Markov on SowmithK</title>
-    <link>http://localhost:1313/tags/markov/</link>
+    <link>https://sowmith1729.github.io/tags/markov/</link>
     <description>Recent content in Markov on SowmithK</description>
     <generator>Hugo -- 0.154.5</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 21 Dec 2024 00:57:38 -0500</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/markov/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://sowmith1729.github.io/tags/markov/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Markov Chains &amp; Modelling</title>
-      <link>http://localhost:1313/blog/2024/markov-chains-modelling/</link>
+      <link>https://sowmith1729.github.io/blog/2024/markov-chains-modelling/</link>
       <pubDate>Sat, 21 Dec 2024 00:57:38 -0500</pubDate>
-      <guid>http://localhost:1313/blog/2024/markov-chains-modelling/</guid>
+      <guid>https://sowmith1729.github.io/blog/2024/markov-chains-modelling/</guid>
       <description>&lt;p&gt;I&amp;rsquo;ve been hearing of Markov Chains for a few years, never got to read about them or something with them. This is my look at them. The sole goal of this post is to get a good look at how Markov Chains work, we are going to do this by attempting to model some stock data. This post is initially written as a paper for a course I took.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;

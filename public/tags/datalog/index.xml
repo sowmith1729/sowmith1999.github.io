@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Datalog on SowmithK</title>
-    <link>http://localhost:1313/tags/datalog/</link>
+    <link>https://sowmith1729.github.io/tags/datalog/</link>
     <description>Recent content in Datalog on SowmithK</description>
     <generator>Hugo -- 0.154.5</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 14 Jun 2024 10:57:38 -0500</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/datalog/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://sowmith1729.github.io/tags/datalog/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Souffle Auto Index</title>
-      <link>http://localhost:1313/blog/2024/souffle-auto-index/</link>
+      <link>https://sowmith1729.github.io/blog/2024/souffle-auto-index/</link>
       <pubDate>Fri, 14 Jun 2024 10:57:38 -0500</pubDate>
-      <guid>http://localhost:1313/blog/2024/souffle-auto-index/</guid>
+      <guid>https://sowmith1729.github.io/blog/2024/souffle-auto-index/</guid>
       <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 &lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Datalog&#34;&gt;Datalog&lt;/a&gt; rules are a bunch of relational queries, each involving of joins over multiple relations. Here is a simple example of a Datalog rule:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;
